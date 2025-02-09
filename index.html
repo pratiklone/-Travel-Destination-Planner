@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Destination Planner</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #f0f4f8, #d9e4f5);
+            color: #333;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #4a90e2;
+            padding: 15px 20px;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #4a90e2;
+        }
+
+        /* Button Styling */
+        button {
+            display: inline-block;
+            background: #4a90e2;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .cta-button {
+            margin: 20px auto;
+            display: block;
+            width: 200px;
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #555;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        textarea {
+            height: 80px;
+        }
+
+        /* Destination Card */
+        .destination-card {
+            background: #f8f9fc;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .destination-card img {
+            width: 120px;
+            height: 120px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .destination-details {
+            flex: 1;
+        }
+
+        .destination-details h3 {
+            color: #4a90e2;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 12px;
+            font-size: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .search-bar button {
+            width: 50px;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .nav-buttons button {
+            width: 48%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">Travel Destination Planner</div>
+
+    <!-- Home Page -->
+    <div id="home" class="container">
+        <h1>Plan Your Adventures</h1>
+        <p style="text-align: center;">Welcome to your personal travel destination planner. Organize and manage your dream destinations effortlessly.</p>
+        <button class="cta-button" onclick="navigateTo('planner')">Start Planning</button>
+    </div>
+
+    <!-- Planner Page -->
+    <div id="planner" class="container" style="display: none;">
+        <h1>Your Travel Planner</h1>
+        <div class="search-bar">
+            <input type="text" id="search" placeholder="Search for destinations...">
+            <button onclick="searchDestination()">🔍</button>
+        </div>
+        <div class="form-group">
+            <label for="destination-name">Destination Name</label>
+            <input type="text" id="destination-name" placeholder="Enter destination name">
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" placeholder="Enter a brief description"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="image-url">Image URL</label>
+            <input type="url" id="image-url" placeholder="Enter an image URL (optional)">
+        </div>
+        <button onclick="addDestination()">Add Destination</button>
+        <div id="destination-list"></div>
+        <div class="nav-buttons">
+            <button onclick="navigateTo('home')">Back to Home</button>
+            <button onclick="clearDestinations()">Clear All</button>
+        </div>
+    </div>
+
+    <script>
+        const destinations = [];
+
+        function navigateTo(page) {
+            document.getElementById('home').style.display = page === 'home' ? 'block' : 'none';
+            document.getElementById('planner').style.display = page === 'planner' ? 'block' : 'none';
+        }
+
+        function addDestination() {
+            const name = document.getElementById('destination-name').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const imageUrl = document.getElementById('image-url').value.trim();
+
+            if (!name || !description) {
+                alert('Please fill in both the name and description.');
+                return;
+            }
+
+            destinations.push({ name, description, imageUrl });
+            renderDestinations();
+            clearForm();
+        }
+
+        function renderDestinations() {
+            const destinationList = document.getElementById('destination-list');
+            destinationList.innerHTML = '';
+            destinations.forEach((destination, index) => {
+                const card = document.createElement('div');
+                card.className = 'destination-card';
+                card.innerHTML = `
+                    ${destination.imageUrl ? `<img src="${destination.imageUrl}" alt="${destination.name}">` : ''}
+                    <div class="destination-details">
+                        <h3>${destination.name}</h3>
+                        <p>${destination.description}</p>
+                    </div>
+                    <button class="delete-btn" onclick="deleteDestination(${index})">Remove</button>
+                `;
+                destinationList.appendChild(card);
+            });
+        }
+
+        function deleteDestination(index) {
+            destinations.splice(index, 1);
+            renderDestinations();
+        }
+
+        function clearDestinations() {
+            if (confirm('Are you sure you want to clear all destinations?')) {
+                destinations.length = 0;
+                renderDestinations();
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('destination-name').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('image-url').value = '';
+        }
+
+        function searchDestination() {
+            const query = document.getElementById('search').value.toLowerCase();
+            const filtered = destinations.filter(d => d.name.toLowerCase().includes(query));
+            const destinationList = document.getElementById('destination-list');
+            destinationList.innerHTML = '';
+            filtered.forEach((destination, index) => {
+                const card = document.createElement('div');
+                card.className = 'destination-card';
+                card.innerHTML = `
+                    ${destination.imageUrl ? `<img src="${destination.imageUrl}" alt="${destination.name}">` : ''}
+                    <div class="destination-details">
+                        <h3>${destination.name}</h3>
+                        <p>${destination.description}</p>
+                    </div>
+                    <button class="delete-btn" onclick="deleteDestination(${index})">Remove</button>
+                `;
+                destinationList.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
